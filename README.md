@@ -6,6 +6,7 @@ A simple C# project to test Mono AOT compilation.
 
 * There are a couple of bash scripts which can be used to compile, AOT and run the project.
 * Clone the repository
+* Open `Terminal.app`
 * cd to the project's path
 * Run ./buildaotandrun.sh
 
