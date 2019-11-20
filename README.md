@@ -50,3 +50,35 @@ Mono: AOT: FOUND method AOTTest.MainClass:PrintToConsole (string) [0x10430cbf0 -
 ```
 
 * Note that line 11 doesn't contain symbols for the `PrintToConsole` method call.
+
+## Full AOT
+
+* The expected behaviour can be achieved when using full AOT.
+* Included in the repo are versions of the build+aot+run scripts which use full AOT (run `./full_buildaotandrun.sh`).
+* Unfortunately the size overhead is massive when using full AOT and it's an all or nothing approach (no way to only AOT specific assemblies).
+* Here's a sample crash stack trace using full AOT:
+
+```
+0   libsystem_kernel.dylib        	0x00007fff6fff949a __pthread_kill + 10
+1   libsystem_pthread.dylib       	0x00007fff700b66cb pthread_kill + 384
+2   libsystem_c.dylib             	0x00007fff6ff81a1c abort + 120
+3   mono                          	0x0000000108320cee mono_post_native_crash_handler + 14
+4   mono                          	0x00000001082b981b mono_handle_native_crash + 475 (mini-exceptions.c:3364)
+5   mono                          	0x00000001082125b1 mono_sigsegv_signal_handler_debug + 769 (mini-runtime.c:3363)
+6   libsystem_platform.dylib      	0x00007fff700abb1d _sigtramp + 29
+7   ???                           	000000000000000000 0 + 0
+8   com.apple.CoreFoundation      	0x00007fff38a29d70 _CFLogvEx3 + 189
+9   com.apple.Foundation          	0x00007fff3b224d05 _NSLogv.llvm.16137531714238344275 + 102
+10  com.apple.Foundation          	0x00007fff3b0d63b6 NSLog + 132
+11  AOTTest.exe.dylib             	0x000000010879ca4a wrapper_managed_to_native_AOTTest_MainClass_NSLog_string_string + 202
+12  mono                          	0x0000000108215a41 mono_jit_runtime_invoke + 1249 (mini-runtime.c:3158)
+13  mono                          	0x0000000108433234 do_runtime_invoke + 84 (object.c:3017)
+14  mono                          	0x0000000108436f5c do_exec_main_checked + 156 (object.c:5120)
+15  mono                          	0x000000010827733d mono_jit_exec + 429 (driver.g.c:1329)
+16  mono                          	0x000000010827a4e8 mono_main + 9048 (driver.g.c:2664)
+17  mono                          	0x0000000108204db8 main + 264 (main.c:408)
+18  libdyld.dylib                 	0x00007fff6feaa2e5 start + 1
+```
+
+* Note how line 11 now includes the mangled method name for the `NSLog` method.
+* I'm still wondering why the calls to `Main` and `PrintToConsole` are not included in the stack trace at all.
