@@ -8,7 +8,7 @@ A simple C# project to test Mono AOT compilation.
 * Clone the repository
 * Open `Terminal.app`
 * cd to the project's path
-* Run ./buildaotandrun.sh
+* Run `./buildaotandrun.sh`
 
 ## Expected behaviour
 
